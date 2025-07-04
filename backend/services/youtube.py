@@ -4,7 +4,7 @@ import uuid
 import logging
 from typing import Dict, Any, Optional
 from core.config import settings
-from models.youtube_models import VideoMetadata, DownloadStatus
+from models.youtube_models import DownloadStatus
 import re
 
 # Configure logging
