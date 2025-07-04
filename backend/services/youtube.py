@@ -13,6 +13,12 @@ class YouTubeService:
         ydl_opts = {
             'quiet': True,
             'no_warnings': True,
+            'socket_timeout': 60,
+            'http_chunk_size': 10485760,
+            'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'referer': 'https://www.youtube.com/',
+            'extractor_retries': 3,
+            'file_access_retries': 3,
         }
         
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -47,6 +53,12 @@ class YouTubeService:
             'quiet': True,
             'no_warnings': True,
             'progress_hooks': [progress_hook],
+            'socket_timeout': 60,
+            'http_chunk_size': 10485760,
+            'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'referer': 'https://www.youtube.com/',
+            'extractor_retries': 3,
+            'file_access_retries': 3,
         }
         
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:

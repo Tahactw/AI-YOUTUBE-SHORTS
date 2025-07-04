@@ -150,6 +150,18 @@ Once the backend is running, visit:
 
 ## Development
 
+### GitHub Actions CI/CD
+
+The project includes a comprehensive GitHub Actions workflow for continuous integration and deployment:
+
+- **🔄 Automated Testing**: Runs on every push and pull request
+- **🌐 Network Connectivity**: Tests YouTube domain accessibility  
+- **📦 Dependency Management**: Installs and verifies all dependencies
+- **🛡️ Security**: Handles firewall and network access issues
+- **📊 Health Checks**: Monitors application and service health
+
+For detailed information, see [GITHUB_ACTIONS_SETUP.md](GITHUB_ACTIONS_SETUP.md).
+
 ### Adding New Features
 
 1. **Backend**: Add new API endpoints in `backend/api/`
@@ -164,10 +176,22 @@ Once the backend is running, visit:
 cd backend
 pytest
 
+# Network connectivity tests
+cd backend
+python test_connectivity.py
+
 # Frontend tests
 cd frontend
 npm test
 ```
+
+### Health Monitoring
+
+The application provides comprehensive health check endpoints:
+
+- **Basic Health**: `GET /api/v1/health`
+- **Network Health**: `GET /api/v1/health/network`
+- **YouTube Service**: `GET /api/v1/health/youtube`
 
 ### Code Quality
 

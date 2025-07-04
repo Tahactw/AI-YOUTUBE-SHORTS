@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/ai_youtube_shorts
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - redis
+      - postgres
+    volumes:
+      - ./backend:/app
+      - /app/__pycache__
+    networks:
+      - default
+      - external_network
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    command: npm run dev
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=ai_youtube_shorts
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  celery:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/ai_youtube_shorts
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - redis
+      - postgres
+    volumes:
+      - ./backend:/app
+    networks:
+      - default
+      - external_network
+    command: celery -A main.celery worker --loglevel=info
+
+  # Network connectivity test service
+  network-test:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - external_network
+    command: >
+      sh -c "
+        echo 'Testing network connectivity...' &&
+        python -c 'import requests; print(\"Testing GitHub:\", requests.get(\"https://github.com\", timeout=10).status_code)' &&
+        python -c 'import requests; print(\"Testing YouTube:\", requests.get(\"https://www.youtube.com\", timeout=10).status_code)' || echo 'YouTube not accessible' &&
+        echo 'Network test completed'
+      "
+    profiles:
+      - test
+
+networks:
+  external_network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: docker_youtube_bridge
+      com.docker.network.driver.mtu: 1500
+
+volumes:
+  redis_data:
+  postgres_data:
