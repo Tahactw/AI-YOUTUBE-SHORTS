@@ -27,9 +27,9 @@ class Settings(BaseSettings):
     # YouTube download settings
     youtube_download_dir: str = "downloads"
     youtube_max_file_size: int = 500 * 1024 * 1024  # 500MB
-    youtube_allowed_formats: list = ["mp4", "webm", "mkv"]
+    youtube_allowed_formats: list = ["mp4", "webm", "mkv"]  # Allowed formats for YouTube downloads. Enforce in the download service.
     youtube_max_duration: int = 3600  # 1 hour in seconds
-    youtube_download_timeout: int = 300  # 5 minutes
+    youtube_download_timeout: int = 300  # 5 minutes. Enforce as a timeout in the download service.
     youtube_test_mode: bool = False  # Enable test mode for development
     
     # Celery settings
