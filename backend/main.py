@@ -1,8 +1,13 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-import requests
-import yt_dlp
-from typing import Dict, Any
+try:
+    from fastapi import FastAPI, HTTPException
+    from fastapi.middleware.cors import CORSMiddleware
+    import requests
+    import yt_dlp
+    from typing import Dict, Any
+except ImportError as e:
+    print(f"Missing required dependencies: {e}")
+    print("Please install dependencies with: pip install -r requirements.txt")
+    raise
 
 app = FastAPI(
     title="AI YouTube Shorts SaaS",
@@ -84,7 +89,14 @@ async def network_health_check():
 async def youtube_service_health():
     """YouTube service health check"""
     try:
-        from services.youtube import youtube_service
+        try:
+            from services.youtube import youtube_service
+        except ImportError:
+            return {
+                "service_available": False,
+                "error": "YouTube service module not found",
+                "status": "unhealthy"
+            }
         
         # Test service initialization
         service_status = {
