@@ -1,5 +1,6 @@
 import os
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
+from pydantic import ConfigDict
 
 class Settings(BaseSettings):
     # FastAPI settings
@@ -28,8 +29,9 @@ class Settings(BaseSettings):
     celery_broker_url: str = "redis://localhost:6379"
     celery_result_backend: str = "redis://localhost:6379"
     
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
+    model_config = ConfigDict(
+        env_file=".env",
+        case_sensitive=False
+    )
 
 settings = Settings()
