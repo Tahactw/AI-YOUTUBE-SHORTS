@@ -1,8 +1,5 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-# from api.health import router as health_router
-# import uvicorn
-
 app = FastAPI(
     title="AI YouTube Shorts SaaS",
     description="A SaaS application for creating AI-powered YouTube Shorts",
