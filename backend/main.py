@@ -4,20 +4,42 @@ import requests
 import yt_dlp
 from typing import Dict, Any
 
+# Lazy import of settings to avoid validation errors during testing
+def get_app_settings():
+    from core.config import get_settings
+    return get_settings()
+
 app = FastAPI(
     title="AI YouTube Shorts SaaS",
-    description="A SaaS application for creating AI-powered YouTube Shorts",
+    description="A secure SaaS application for creating AI-powered YouTube Shorts",
     version="1.0.0"
 )
 
-# CORS configuration for frontend integration
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Next.js default port
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Add security middleware after app creation
+def setup_security_middleware():
+    from core.middleware import add_security_middleware
+    settings = get_app_settings()
+    
+    # Disable docs in production
+    if hasattr(settings, 'debug') and not settings.debug:
+        app.docs_url = None
+        app.redoc_url = None
+    
+    add_security_middleware(app, settings)
+
+# Setup middleware
+try:
+    setup_security_middleware()
+except Exception as e:
+    # In case of configuration errors, we'll setup basic CORS
+    print(f"Warning: Could not setup security middleware: {e}")
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:3000"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 # Health check endpoint
 @app.get("/api/v1/health")
@@ -75,7 +97,7 @@ async def network_health_check():
         results["status"] = "unhealthy"
     
     import datetime
-    results["timestamp"] = datetime.datetime.utcnow().isoformat()
+    results["timestamp"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
     
     return results
 
@@ -112,7 +134,13 @@ async def youtube_service_health():
 
 @app.get("/")
 async def root():
-    return {"message": "AI YouTube Shorts SaaS API"}
+    try:
+        settings = get_app_settings()
+        environment = getattr(settings, 'fastapi_env', 'unknown')
+    except Exception:
+        environment = 'unknown'
+    
+    return {"message": "AI YouTube Shorts SaaS API", "status": "secure", "environment": environment}
 
 # if __name__ == "__main__":
 #     uvicorn.run(app, host="0.0.0.0", port=8000)

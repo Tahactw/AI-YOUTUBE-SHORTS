@@ -5,6 +5,12 @@ python-multipart>=0.0.6
 pydantic>=2.0.0
 pydantic-settings>=2.0.0
 
+# Security dependencies
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+cryptography>=3.4.8
+itsdangerous>=2.0.0
+
 # YouTube and video processing
 yt-dlp>=2023.10.0
 moviepy>=1.0.3
