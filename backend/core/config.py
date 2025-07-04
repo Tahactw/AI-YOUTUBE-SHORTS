@@ -3,6 +3,9 @@ from pydantic_settings import BaseSettings
 from pydantic import ConfigDict
 
 class Settings(BaseSettings):
+    # Environment settings
+    fastapi_env: str = "development"  # development, test, production
+    
     # FastAPI settings
     app_name: str = "AI YouTube Shorts SaaS"
     debug: bool = True
@@ -31,7 +34,9 @@ class Settings(BaseSettings):
     
     model_config = ConfigDict(
         env_file=".env",
-        case_sensitive=False
+        case_sensitive=False,
+        extra='ignore',  # This allows extra environment variables
+        validate_default=True
     )
 
 settings = Settings()
