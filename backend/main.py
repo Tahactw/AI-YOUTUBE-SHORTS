@@ -75,7 +75,7 @@ async def network_health_check():
         results["status"] = "unhealthy"
     
     import datetime
-    results["timestamp"] = datetime.datetime.utcnow().isoformat()
+    results["timestamp"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
     
     return results
 

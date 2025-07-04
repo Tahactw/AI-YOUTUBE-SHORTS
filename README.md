@@ -16,7 +16,7 @@ A comprehensive SaaS application for creating AI-powered YouTube Shorts with aut
 
 ### Backend
 - **Framework**: FastAPI
-- **Language**: Python 3.9+
+- **Language**: Python 3.11+
 - **Database**: PostgreSQL
 - **Cache**: Redis
 - **Background Tasks**: Celery

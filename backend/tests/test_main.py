@@ -25,6 +25,25 @@ class TestHealthEndpoints:
         assert response.status_code == 200
         data = response.json()
         assert "message" in data
+    
+    def test_youtube_service_health_endpoint(self):
+        """Test YouTube service health endpoint"""
+        response = client.get("/api/v1/health/youtube")
+        assert response.status_code == 200
+        data = response.json()
+        assert "service_available" in data
+        assert "download_path" in data
+        assert "status" in data
+    
+    def test_network_health_endpoint(self):
+        """Test network health endpoint"""
+        response = client.get("/api/v1/health/network")
+        assert response.status_code == 200
+        data = response.json()
+        assert "status" in data
+        assert "youtube_domains" in data
+        assert "yt_dlp_available" in data
+        assert "timestamp" in data
 
 
 class TestNetworkConnectivity:

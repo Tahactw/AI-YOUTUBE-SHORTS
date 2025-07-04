@@ -247,6 +247,7 @@ Desktop.ini
 # Application specific
 uploads/
 temp/
+test_uploads/
 *.mp4
 *.mp3
 *.wav
