@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from api.youtube import router as youtube_router
+
 app = FastAPI(
     title="AI YouTube Shorts SaaS",
     description="A SaaS application for creating AI-powered YouTube Shorts",
@@ -15,14 +17,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Include routers
+app.include_router(youtube_router, prefix="/api/v1/youtube", tags=["youtube"])
+
 # Health check endpoint
 @app.get("/api/v1/health")
 async def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "service": "AI YouTube Shorts SaaS"}
-
-# Include routers
-# app.include_router(health_router, prefix="/api/v1")
 
 @app.get("/")
 async def root():

@@ -3,6 +3,7 @@ fastapi>=0.100.0
 uvicorn[standard]>=0.20.0
 python-multipart>=0.0.6
 pydantic>=2.0.0
+pydantic-settings>=2.0.0
 
 # YouTube and video processing
 yt-dlp>=2023.10.0

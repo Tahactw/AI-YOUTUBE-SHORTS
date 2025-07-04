@@ -1,5 +1,5 @@
 import os
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # FastAPI settings
@@ -23,6 +23,14 @@ class Settings(BaseSettings):
     # File upload settings
     upload_dir: str = "uploads"
     max_upload_size: int = 100 * 1024 * 1024  # 100MB
+    
+    # YouTube download settings
+    youtube_download_dir: str = "downloads"
+    youtube_max_file_size: int = 500 * 1024 * 1024  # 500MB
+    youtube_allowed_formats: list = ["mp4", "webm", "mkv"]
+    youtube_max_duration: int = 3600  # 1 hour in seconds
+    youtube_download_timeout: int = 300  # 5 minutes
+    youtube_test_mode: bool = False  # Enable test mode for development
     
     # Celery settings
     celery_broker_url: str = "redis://localhost:6379"
