@@ -1,6 +1,7 @@
 """
 Test YouTube service functionality
 """
+import os
 import pytest
 import requests
 from unittest.mock import patch, MagicMock
@@ -119,17 +120,67 @@ class TestYouTubeConnectivity:
         assert hasattr(yt_dlp, 'YoutubeDL')
     
     @pytest.mark.slow
-    def test_real_youtube_video_info(self, test_youtube_url):
-        """Test extracting real YouTube video info (slow test)"""
+    def test_real_youtube_video_info(self, fallback_video_ids):
+        """Test extracting real YouTube video info with fallback (slow test)"""
         service = YouTubeService()
         
         try:
-            info = service.get_video_info(test_youtube_url)
+            # Try the fallback mechanism
+            info = service.get_video_info_with_fallback(fallback_video_ids)
             assert 'title' in info
             assert 'duration' in info
             assert info['duration'] > 0
+            assert 'url' in info
+            print(f"Successfully extracted info for: {info.get('title', 'N/A')}")
         except Exception as e:
-            pytest.skip(f"YouTube access issue: {e}")
+            pytest.skip(f"YouTube access issue with all fallback videos: {e}")
+    
+    @pytest.mark.slow
+    def test_real_youtube_video_download_with_fallback(self, fallback_video_ids, test_upload_dir):
+        """Test downloading real YouTube video with fallback (slow test)"""
+        service = YouTubeService()
+        service.download_path = str(test_upload_dir)
+        
+        try:
+            # Try the fallback mechanism for download
+            filename = service.download_video_with_fallback(fallback_video_ids)
+            assert filename is not None
+            assert os.path.exists(filename)
+            print(f"Successfully downloaded: {filename}")
+        except Exception as e:
+            pytest.skip(f"YouTube download issue with all fallback videos: {e}")
+    
+    def test_fallback_mechanism_with_mock(self, fallback_video_ids):
+        """Test fallback mechanism with mocked responses"""
+        service = YouTubeService()
+        
+        # Mock the first few to fail, last one to succeed
+        mock_info = {
+            'title': 'Test Video',
+            'description': 'Test Description',
+            'duration': 120,
+            'thumbnail': 'https://example.com/thumb.jpg',
+            'uploader': 'Test Channel',
+            'view_count': 1000,
+        }
+        
+        with patch('yt_dlp.YoutubeDL') as mock_ydl:
+            # First two calls fail, third succeeds
+            mock_instance = mock_ydl.return_value.__enter__.return_value
+            mock_instance.extract_info.side_effect = [
+                Exception("Video unavailable"),
+                Exception("Video unavailable"),
+                mock_info,
+            ]
+            
+            result = service.get_video_info_with_fallback(fallback_video_ids[:3])
+            
+            assert result['title'] == 'Test Video'
+            assert result['description'] == 'Test Description'
+            assert result['duration'] == 120
+            
+            # Should have been called 3 times (2 failures + 1 success)
+            assert mock_instance.extract_info.call_count == 3
 
 
 class TestYouTubeServiceGlobalInstance:
