@@ -34,17 +34,28 @@ class YouTubeService:
         if filename is None:
             filename = '%(title)s.%(ext)s'
         
+        downloaded_file = None
+        
+        def progress_hook(d):
+            nonlocal downloaded_file
+            if d['status'] == 'finished':
+                downloaded_file = d['info_dict']['_filename']
+        
         ydl_opts = {
             'format': 'best[height<=720]',
             'outtmpl': os.path.join(self.download_path, filename),
             'quiet': True,
             'no_warnings': True,
+            'progress_hooks': [progress_hook],
         }
         
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             try:
                 ydl.download([url])
-                return os.path.join(self.download_path, filename)
+                if downloaded_file:
+                    return downloaded_file
+                else:
+                    raise Exception("Download completed but file name could not be determined.")
             except Exception as e:
                 raise Exception(f"Error downloading video: {str(e)}")
 
