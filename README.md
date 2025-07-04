@@ -174,10 +174,26 @@ For detailed information, see [GITHUB_ACTIONS_SETUP.md](GITHUB_ACTIONS_SETUP.md)
 ```bash
 # Backend tests
 cd backend
-pytest
+python -m pytest tests/ -v
+
+# Run specific test category
+python -m pytest tests/test_youtube.py -v
+
+# Run only fast tests (skip slow network tests)
+python -m pytest tests/ -v -m "not slow"
 
 # Network connectivity tests
-cd backend
+python test_connectivity.py
+```
+
+### YouTube Video Testing
+
+The application includes a robust fallback mechanism for YouTube video testing to handle unavailable videos. See [YOUTUBE_TESTING.md](YOUTUBE_TESTING.md) for detailed information about:
+
+- Fallback video ID configuration
+- Error handling mechanisms
+- Testing in restricted environments
+- Updating video IDs for tests
 python test_connectivity.py
 
 # Frontend tests

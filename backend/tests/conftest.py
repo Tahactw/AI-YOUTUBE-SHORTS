@@ -7,7 +7,18 @@ from pathlib import Path
 
 # Test configuration
 TEST_UPLOAD_DIR = "test_uploads"
-TEST_YOUTUBE_URL = "https://www.youtube.com/watch?v=BaW_jenozKc"  # Short test video
+
+# Multiple fallback video IDs for robust testing
+FALLBACK_VIDEO_IDS = [
+    "dQw4w9WgXcQ",  # Rick Astley - Never Gonna Give You Up (very stable)
+    "9bZkp7q19f0",  # Alternative stable video
+    "jNQXAC9IVRw",  # Public domain/creative commons video
+    "BaW_jenozKc",  # Original failing video (keep as fallback)
+]
+
+# Generate fallback YouTube URLs
+FALLBACK_YOUTUBE_URLS = [f"https://www.youtube.com/watch?v={vid}" for vid in FALLBACK_VIDEO_IDS]
+TEST_YOUTUBE_URL = FALLBACK_YOUTUBE_URLS[0]  # Default to first fallback
 
 @pytest.fixture(scope="session")
 def test_upload_dir():
@@ -24,3 +35,13 @@ def test_upload_dir():
 def test_youtube_url():
     """Test YouTube URL"""
     return TEST_YOUTUBE_URL
+
+@pytest.fixture
+def fallback_youtube_urls():
+    """Fallback YouTube URLs for testing"""
+    return FALLBACK_YOUTUBE_URLS
+
+@pytest.fixture
+def fallback_video_ids():
+    """Fallback video IDs for testing"""
+    return FALLBACK_VIDEO_IDS
