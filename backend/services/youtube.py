@@ -128,7 +128,7 @@ class YouTubeService:
             nonlocal downloaded_file
             if d['status'] == 'downloading':
                 self.update_job_status(job_id, DownloadStatus.IN_PROGRESS, 
-                                     progress=d.get('_percent_str', '0%'))
+                                     progress=float(d.get('_percent_str', '0%').strip('%')))
             elif d['status'] == 'finished':
                 downloaded_file = d.get('filename', d.get('_filename', ''))
                 self.update_job_status(job_id, DownloadStatus.COMPLETED,
